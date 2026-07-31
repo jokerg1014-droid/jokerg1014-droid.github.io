@@ -1,447 +1,152 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#17211d" />
-  <meta name="description" content="一套融合价值观、优势、兴趣与PFE反思的生命方向探索问答工具。" />
-  <title>世界尽头的人生咖啡馆｜生命方向探索器</title>
-  <style>
-    :root {
-      --ink: #1b2420;
-      --deep: #17211d;
-      --deep2: #23352d;
-      --paper: #f4eedf;
-      --paper2: #fffaf0;
-      --gold: #c99b52;
-      --gold2: #e4c78e;
-      --muted: #6e756f;
-      --line: rgba(27,36,32,.14);
-      --shadow: 0 20px 60px rgba(0,0,0,.16);
-      --radius: 22px;
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at 15% 0%, rgba(201,155,82,.14), transparent 33%),
-        linear-gradient(180deg, #101713 0, #1a2721 48%, #0e1512 100%);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-      min-height: 100vh;
-    }
-    button, textarea, input { font: inherit; }
-    button { cursor: pointer; }
-    .app { width: min(760px, 100%); margin: 0 auto; min-height: 100vh; background: var(--paper); box-shadow: var(--shadow); }
-    .hero {
-      position: relative; overflow: hidden; min-height: 330px; padding: 30px 26px 34px;
-      color: #fff; background:
-        linear-gradient(160deg, rgba(10,17,14,.30), rgba(10,17,14,.88)),
-        radial-gradient(circle at 80% 10%, rgba(228,199,142,.35), transparent 25%),
-        linear-gradient(135deg, #4c3022, #17251f 55%, #0c1210);
-    }
-    .hero::before {
-      content: ""; position: absolute; inset: 0; opacity: .18;
-      background-image:
-        linear-gradient(90deg, transparent 49%, rgba(255,255,255,.25) 50%, transparent 51%),
-        linear-gradient(transparent 49%, rgba(255,255,255,.18) 50%, transparent 51%);
-      background-size: 38px 38px; transform: rotate(8deg) scale(1.25);
-    }
-    .hero::after {
-      content: "☕"; position: absolute; right: 24px; bottom: 4px; font-size: 132px;
-      filter: grayscale(1); opacity: .10; transform: rotate(-8deg);
-    }
-    .hero-inner { position: relative; z-index: 1; }
-    .eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; border: 1px solid rgba(255,255,255,.24); border-radius: 999px; font-size: 12px; letter-spacing: .08em; color: #f6e6bd; background: rgba(0,0,0,.15); }
-    h1 { margin: 22px 0 10px; font-family: Georgia, "Songti SC", "STSong", serif; font-size: clamp(34px, 8vw, 54px); line-height: 1.04; letter-spacing: -.04em; }
-    .subtitle { max-width: 600px; margin: 0; color: rgba(255,255,255,.78); line-height: 1.75; font-size: 15px; }
-    .formula { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; margin-top: 20px; font-size: 13px; color: #f7ead0; }
-    .formula b { background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.16); padding: 7px 10px; border-radius: 9px; }
-    .hero-meta { margin-top: 20px; display: flex; gap: 14px; flex-wrap: wrap; color: rgba(255,255,255,.62); font-size: 12px; }
-
-    .progress-wrap { position: sticky; top: 0; z-index: 20; background: rgba(244,238,223,.94); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); padding: 12px 18px 10px; }
-    .progress-head { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 7px; }
-    .progress { height: 6px; background: rgba(23,33,29,.09); border-radius: 999px; overflow: hidden; }
-    .progress > span { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, #8a6336, var(--gold)); transition: width .35s ease; }
-
-    main { padding: 24px 18px 80px; }
-    .notice { margin: 0 0 20px; padding: 14px 15px; border-left: 3px solid var(--gold); background: rgba(255,255,255,.46); border-radius: 0 12px 12px 0; color: #59615c; font-size: 13px; line-height: 1.7; }
-    .chat { display: flex; flex-direction: column; gap: 14px; }
-    .bubble { max-width: 92%; padding: 15px 17px; border-radius: 18px; line-height: 1.72; font-size: 15px; box-shadow: 0 4px 18px rgba(31,40,35,.05); animation: pop .25s ease both; white-space: pre-wrap; }
-    .bot { align-self: flex-start; background: var(--paper2); border: 1px solid rgba(42,47,43,.08); border-bottom-left-radius: 5px; }
-    .user { align-self: flex-end; color: #fff; background: var(--deep2); border-bottom-right-radius: 5px; }
-    .bot strong { font-family: Georgia, "Songti SC", serif; font-size: 17px; }
-    @keyframes pop { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
-
-    .panel { margin-top: 14px; padding: 18px; background: rgba(255,255,255,.66); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 10px 30px rgba(31,40,35,.05); }
-    .qtag { color: #8b673a; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-    .question { margin: 7px 0 6px; font-family: Georgia, "Songti SC", serif; font-size: 23px; line-height: 1.38; }
-    .hint { margin: 0 0 14px; color: var(--muted); font-size: 13px; line-height: 1.65; }
-    textarea { width: 100%; min-height: 118px; resize: vertical; border: 1px solid rgba(23,33,29,.15); background: #fffcf5; border-radius: 14px; padding: 14px; outline: none; line-height: 1.65; color: var(--ink); }
-    textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,155,82,.14); }
-    .chips { display: flex; flex-wrap: wrap; gap: 9px; margin: 13px 0 4px; }
-    .chip { border: 1px solid rgba(23,33,29,.14); color: #3b4540; background: #fffaf1; padding: 10px 12px; border-radius: 999px; transition: .18s; font-size: 14px; }
-    .chip:hover { transform: translateY(-1px); border-color: rgba(138,99,54,.5); }
-    .chip.selected { color: #fff; background: var(--deep2); border-color: var(--deep2); box-shadow: 0 5px 14px rgba(23,33,29,.18); }
-    .slider-box { margin: 18px 0 6px; }
-    input[type="range"] { width: 100%; accent-color: #9a703e; }
-    .scale { display: flex; justify-content: space-between; color: var(--muted); font-size: 12px; }
-    .score { font-family: Georgia, serif; font-size: 38px; color: #8b6335; text-align: center; margin: 4px 0 10px; }
-    .actions { display: flex; gap: 10px; margin-top: 17px; }
-    .btn { flex: 1; border: 0; border-radius: 13px; padding: 13px 16px; font-weight: 700; transition: .2s; }
-    .btn-primary { color: #fff; background: var(--deep); box-shadow: 0 8px 20px rgba(23,33,29,.18); }
-    .btn-primary:hover { transform: translateY(-1px); background: #263c32; }
-    .btn-secondary { color: #4f5954; background: rgba(23,33,29,.07); }
-    .btn:disabled { opacity: .35; cursor: not-allowed; transform: none; }
-    .counter { margin-top: 9px; color: var(--muted); text-align: right; font-size: 12px; }
-    .five-list { display: grid; gap: 9px; }
-    .five-list input { width: 100%; border: 1px solid rgba(23,33,29,.14); border-radius: 12px; padding: 12px 13px; background: #fffcf5; outline: none; }
-    .five-list input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,155,82,.12); }
-
-    .result { display: none; }
-    .result.show { display: block; animation: pop .4s ease both; }
-    .result-hero { color: #fff; padding: 25px 22px; border-radius: 24px; background: linear-gradient(135deg, #18251f, #31483b); box-shadow: var(--shadow); }
-    .result-hero small { color: #e9d4aa; letter-spacing: .08em; }
-    .result-hero h2 { margin: 9px 0 11px; font-family: Georgia, "Songti SC", serif; font-size: 30px; line-height: 1.25; }
-    .purpose { margin: 18px 0 0; padding: 17px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.07); border-radius: 16px; line-height: 1.8; font-size: 17px; }
-    .card { margin-top: 15px; padding: 20px; background: rgba(255,255,255,.72); border: 1px solid var(--line); border-radius: 20px; }
-    .card h3 { margin: 0 0 12px; font-family: Georgia, "Songti SC", serif; font-size: 21px; }
-    .card p { color: #535d57; line-height: 1.75; }
-    .route { padding: 15px 0; border-top: 1px solid var(--line); }
-    .route:first-of-type { border-top: 0; padding-top: 2px; }
-    .route b { display: block; margin-bottom: 5px; font-size: 16px; }
-    .route span { color: #5e6762; line-height: 1.65; font-size: 14px; }
-    .meter { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; margin: 10px 0; }
-    .meter-bar { height: 8px; background: rgba(23,33,29,.08); border-radius: 999px; overflow: hidden; }
-    .meter-bar i { display: block; height: 100%; background: linear-gradient(90deg, #7a5936, #c89a51); border-radius: inherit; }
-    .list { margin: 0; padding-left: 19px; color: #505a55; line-height: 1.8; }
-    .report-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 18px 0; }
-    .source { margin-top: 26px; color: #78807b; font-size: 11px; line-height: 1.7; }
-    .source a { color: #765632; }
-    footer { padding: 28px 20px 42px; text-align: center; color: rgba(255,255,255,.45); background: #0e1512; font-size: 11px; line-height: 1.7; }
-    .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 12px); z-index: 99; opacity: 0; pointer-events: none; padding: 11px 16px; color: #fff; background: rgba(18,27,23,.94); border-radius: 999px; transition: .25s; font-size: 13px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
-    .toast.show { opacity: 1; transform: translate(-50%, 0); }
-    @media (max-width: 540px) {
-      .app { box-shadow: none; }
-      .hero { min-height: 350px; padding: 25px 20px 30px; }
-      main { padding-left: 14px; padding-right: 14px; }
-      .panel { padding: 16px; }
-      .question { font-size: 21px; }
-      .report-actions { grid-template-columns: 1fr; }
-    }
-    @media print {
-      body { background: #fff; }
-      .app { width: 100%; box-shadow: none; }
-      .hero, .progress-wrap, #quizArea, .report-actions, footer, .notice { display: none !important; }
-      main { padding: 0; }
-      .result { display: block !important; }
-      .card, .result-hero { break-inside: avoid; box-shadow: none; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#151e1a">
+<meta name="description" content="20道全选择题，生成存在目的、优势结构、适合行业与职能的深度分析报告。">
+<title>人生方向20问｜找到更适合你的事</title>
+<style>
+:root{--deep:#151e1a;--deep2:#24342c;--paper:#f4efe3;--paper2:#fffaf1;--gold:#b98a47;--gold2:#e6cea1;--ink:#19231e;--muted:#67716b;--line:rgba(25,35,30,.13);--danger:#8b3f35;--shadow:0 22px 70px rgba(0,0,0,.18);--radius:22px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 20% 0,rgba(185,138,71,.18),transparent 30%),linear-gradient(180deg,#0e1512,#1d2a24 60%,#0d1411);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;min-height:100vh}button{font:inherit}.app{width:min(780px,100%);min-height:100vh;margin:auto;background:var(--paper);box-shadow:var(--shadow)}
+.hero{position:relative;overflow:hidden;padding:28px 22px 30px;color:#fff;background:linear-gradient(145deg,#121b17,#2c4136 66%,#18221d)}.hero:after{content:"20";position:absolute;right:-10px;bottom:-48px;font:700 190px/1 Georgia,serif;color:rgba(255,255,255,.045)}.hero-inner{position:relative;z-index:1}.badge{display:inline-flex;padding:7px 11px;border:1px solid rgba(255,255,255,.22);border-radius:999px;color:#f0d9ac;background:rgba(0,0,0,.12);font-size:12px;letter-spacing:.08em}.hero h1{margin:17px 0 9px;font:700 clamp(34px,8vw,50px)/1.08 Georgia,"Songti SC",serif;letter-spacing:-.04em}.hero p{max-width:620px;margin:0;color:rgba(255,255,255,.75);font-size:14px;line-height:1.75}.meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:17px;color:rgba(255,255,255,.64);font-size:12px}.meta span{display:inline-flex;align-items:center;gap:5px}
+.progress-wrap{position:sticky;top:0;z-index:20;padding:11px 16px 9px;background:rgba(244,239,227,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}.progress-head{display:flex;justify-content:space-between;margin-bottom:7px;color:var(--muted);font-size:12px}.progress{height:6px;border-radius:999px;background:rgba(21,30,26,.09);overflow:hidden}.progress span{display:block;width:0;height:100%;border-radius:999px;background:linear-gradient(90deg,#78562f,var(--gold));transition:width .25s ease}
+main{padding:20px 15px 70px}.intro{padding:16px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.58);line-height:1.75;color:#59625d;font-size:13px}.intro strong{color:var(--ink)}.startbox{margin-top:15px;text-align:center}.startbtn{width:100%;border:0;border-radius:15px;padding:15px 18px;background:var(--deep);color:#fff;font-weight:750;box-shadow:0 10px 24px rgba(21,30,26,.19)}
+.quiz{display:none}.quiz.show{display:block}.qcard{margin-top:15px;padding:19px 16px 16px;border:1px solid var(--line);border-radius:var(--radius);background:rgba(255,255,255,.72);box-shadow:0 10px 32px rgba(25,35,30,.06);animation:up .25s ease both}@keyframes up{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}.qnum{color:#8b6335;font-size:12px;font-weight:800;letter-spacing:.08em}.question{margin:7px 0 6px;font:700 23px/1.38 Georgia,"Songti SC",serif}.hint{margin:0 0 13px;color:var(--muted);font-size:13px;line-height:1.65}.options{display:grid;gap:9px}.option{position:relative;width:100%;border:1px solid rgba(25,35,30,.13);border-radius:14px;padding:12px 42px 12px 13px;background:#fffaf3;color:#303b35;text-align:left;line-height:1.45;transition:.16s}.option:hover{border-color:rgba(139,99,53,.5);transform:translateY(-1px)}.option.selected{border-color:var(--deep2);background:var(--deep2);color:#fff;box-shadow:0 7px 18px rgba(21,30,26,.17)}.option .mark{position:absolute;right:13px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:50%;border:1px solid rgba(25,35,30,.2);display:grid;place-items:center;font-size:12px}.option.selected .mark{border-color:rgba(255,255,255,.65);background:rgba(255,255,255,.12)}.qactions{display:flex;gap:9px;margin-top:15px}.btn{border:0;border-radius:13px;padding:12px 14px;font-weight:750}.btn-primary{flex:1;background:var(--deep);color:#fff}.btn-secondary{background:rgba(21,30,26,.08);color:#4c5751}.btn:disabled{opacity:.35}.selection-note{margin-top:9px;text-align:center;color:var(--muted);font-size:12px}
+.loading{display:none;margin-top:16px;padding:26px 18px;text-align:center;border-radius:20px;background:#fffaf2;border:1px solid var(--line)}.loading.show{display:block}.spinner{width:34px;height:34px;margin:0 auto 12px;border:3px solid rgba(21,30,26,.12);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.result{display:none}.result.show{display:block;animation:up .35s ease both}.result-hero{position:relative;overflow:hidden;padding:23px 20px;border-radius:24px;color:#fff;background:linear-gradient(135deg,#142019,#324b3d);box-shadow:var(--shadow)}.result-hero:after{content:"✦";position:absolute;right:18px;top:7px;font-size:90px;color:rgba(255,255,255,.06)}.result-hero small{color:#e6c98e;letter-spacing:.1em}.result-hero h2{position:relative;margin:8px 0 9px;font:700 31px/1.25 Georgia,"Songti SC",serif}.result-sub{position:relative;color:rgba(255,255,255,.72);line-height:1.7}.purpose{position:relative;margin-top:15px;padding:15px;border:1px solid rgba(255,255,255,.17);border-radius:15px;background:rgba(255,255,255,.07);font:600 16px/1.8 Georgia,"Songti SC",serif}.confidence{display:flex;gap:8px;align-items:center;margin-top:13px;color:rgba(255,255,255,.65);font-size:12px}.dots{display:flex;gap:4px}.dots i{width:18px;height:5px;border-radius:999px;background:rgba(255,255,255,.15)}.dots i.on{background:#ddb873}
+.card{margin-top:14px;padding:18px 16px;border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.72)}.card h3{margin:0 0 11px;font:700 21px/1.35 Georgia,"Songti SC",serif}.card h4{margin:15px 0 7px;font-size:15px}.card p{margin:8px 0;color:#515c56;line-height:1.78}.insight{padding:13px 14px;border-left:3px solid var(--gold);border-radius:0 12px 12px 0;background:#fffaf0;color:#424d47;line-height:1.75}.tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}.tag{padding:7px 10px;border-radius:999px;background:rgba(21,30,26,.07);font-size:12px;color:#48534d}.meter{display:grid;grid-template-columns:86px 1fr 38px;gap:9px;align-items:center;margin:11px 0;font-size:13px}.meterbar{height:8px;border-radius:999px;background:rgba(21,30,26,.08);overflow:hidden}.meterbar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#795831,#c6934b)}.rank{padding:13px 0;border-top:1px solid var(--line)}.rank:first-child{border-top:0;padding-top:0}.rank-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.rank-head b{font-size:16px}.score{font-size:12px;color:#8b6335;font-weight:800;white-space:nowrap}.rank p{margin:6px 0 0;font-size:13px;line-height:1.65}.combo{margin:10px 0;padding:14px;border-radius:14px;background:#fffaf1;border:1px solid rgba(185,138,71,.2)}.combo b{display:block;margin-bottom:5px}.combo span{color:#56615b;font-size:13px;line-height:1.65}.list{margin:0;padding-left:19px;color:#4f5a54;line-height:1.85}.warning{border-left-color:var(--danger);background:#fff4f1}.report-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px}.source{margin-top:22px;color:#78817c;font-size:11px;line-height:1.7}.source a{color:#78572f}.modal{position:fixed;inset:0;z-index:99;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(5,9,7,.82)}.modal.show{display:flex}.modal-box{max-width:520px;width:100%;max-height:92vh;overflow:auto;padding:14px;border-radius:20px;background:#fff}.modal img{display:block;width:100%;border-radius:12px}.modal p{text-align:center;color:#59635d;font-size:13px}.toast{position:fixed;left:50%;bottom:24px;z-index:100;opacity:0;pointer-events:none;transform:translate(-50%,10px);padding:10px 15px;border-radius:999px;background:rgba(15,23,19,.95);color:#fff;font-size:13px;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}footer{padding:26px 18px 40px;text-align:center;background:#0d1411;color:rgba(255,255,255,.43);font-size:11px;line-height:1.7}
+@media(max-width:540px){.app{box-shadow:none}.hero{padding:25px 19px 27px}.hero h1{font-size:37px}.question{font-size:21px}.report-actions{grid-template-columns:1fr}.meter{grid-template-columns:78px 1fr 34px}}
+@media print{body{background:#fff}.app{width:100%;box-shadow:none}.hero,.progress-wrap,#introArea,#quizArea,.report-actions,footer,.source{display:none!important}.result{display:block!important}main{padding:0}.card,.result-hero{break-inside:avoid;box-shadow:none}}
+</style>
 </head>
 <body>
 <div class="app">
-  <header class="hero">
-    <div class="hero-inner">
-      <div class="eyebrow">THE CAFE AT THE EDGE OF YOUR LIFE</div>
-      <h1>世界尽头的<br>人生咖啡馆</h1>
-      <p class="subtitle">用一场约 12 分钟的对话，整理你真正在意的价值、自然擅长的能力、持续好奇的领域，以及你愿意为谁创造什么改变。</p>
-      <div class="formula"><b>喜欢的事</b><span>×</span><b>擅长的事</b><span>×</span><b>重要的事</b><span>→</span><b>想做的事</b></div>
-      <div class="hero-meta"><span>☕ 16 个原创问题</span><span>🔒 答案只保存在你的设备</span><span>🧭 输出方向假说与 90 天实验</span></div>
-    </div>
-  </header>
-
-  <div class="progress-wrap">
-    <div class="progress-head"><span id="stageLabel">欢迎入座</span><span id="progressText">0%</span></div>
-    <div class="progress"><span id="progressBar"></span></div>
-  </div>
-
-  <main>
-    <p class="notice">这不是职业测评，也不会替你宣布一个“唯一正确答案”。它的任务，是把模糊感整理成可验证的<strong>人生方向假说</strong>，再用小成本行动寻找证据。</p>
-
-    <section id="quizArea">
-      <div class="chat" id="chat"></div>
-      <div class="panel" id="questionPanel"></div>
-    </section>
-
-    <section class="result" id="resultArea">
-      <div class="result-hero">
-        <small>YOUR PURPOSE HYPOTHESIS</small>
-        <h2>你的存在目的假说</h2>
-        <div class="purpose" id="purposeText"></div>
-      </div>
-
-      <div class="card">
-        <h3>你的方向坐标</h3>
-        <div id="profileMeters"></div>
-        <p id="profileSummary"></p>
-      </div>
-
-      <div class="card">
-        <h3>更适合你尝试的三类事情</h3>
-        <div id="routes"></div>
-      </div>
-
-      <div class="card">
-        <h3>你的 Big Five for Life</h3>
-        <ol class="list" id="bigFiveResult"></ol>
-      </div>
-
-      <div class="card">
-        <h3>接下来 90 天：不要辞职，先做实验</h3>
-        <ol class="list" id="experiments"></ol>
-      </div>
-
-      <div class="card">
-        <h3>今后遇到机会，先过这 6 道筛选</h3>
-        <ol class="list">
-          <li>它是否服务于我最重要的价值，而不只是满足他人的评价？</li>
-          <li>它是否让我频繁使用自己的自然优势，而不是长期扮演不擅长的角色？</li>
-          <li>我是否愿意在没有掌声时，仍持续接触这个主题？</li>
-          <li>它是否真的帮助了我在意的人，带来我期待的改变？</li>
-          <li>它与我的现实约束是否兼容，或者能否从低风险版本开始？</li>
-          <li>做完以后，我更接近充实，还是只更接近“看起来成功”？</li>
-        </ol>
-      </div>
-
-      <div class="report-actions">
-        <button class="btn btn-primary" id="copyBtn">复制完整报告</button>
-        <button class="btn btn-primary" id="shareBtn">分享这个探索器</button>
-        <button class="btn btn-secondary" onclick="window.print()">打印 / 存为 PDF</button>
-        <button class="btn btn-secondary" id="restartBtn">重新探索</button>
-      </div>
-
-      <div class="source">
-        方法框架受到八木仁平《世界一やさしい「やりたいこと」の見つけ方》的“喜欢 × 擅长 × 重要”自我理解思路，以及 John Strelecky《The Cafe on the Edge of the World》的 PFE（Purpose for Existing）、充实感与人生关键体验反思启发。页面问题、算法与文字均为原创重构，并非作者或出版社的官方产品，也不替代心理治疗、职业咨询或重大人生决策的专业意见。
-        <br>参考：<a href="https://www.kadokawa.co.jp/product/321905000741/" target="_blank" rel="noopener">KADOKAWA 书籍页</a> · <a href="https://www.johnstrelecky.com/books/cafe-on-the-edge-of-the-world/" target="_blank" rel="noopener">John Strelecky 官方书籍页</a>
-      </div>
-    </section>
-  </main>
-
-  <footer>真正的方向，通常不是一次想明白的，而是在一次次诚实选择中逐渐清晰。</footer>
+<header class="hero"><div class="hero-inner"><span class="badge">THE PURPOSE & FIT INDEX</span><h1>人生方向20问</h1><p>20道全选择题，交叉分析你的价值观、自然优势、成就方式、工作节奏与现实约束，生成存在目的、适合行业和职能的深度报告。</p><div class="meta"><span>⚡ 约3分钟</span><span>👆 全部选择题</span><span>🔒 答案不上传</span><span>📊 输出行业×职能建议</span></div></div></header>
+<div class="progress-wrap"><div class="progress-head"><span id="stageLabel">准备开始</span><span id="progressText">0 / 20</span></div><div class="progress"><span id="progressBar"></span></div></div>
+<main>
+<section id="introArea"><div class="intro"><strong>这不是算命，也不是把你的答案换一种说法重复一遍。</strong><br>系统会对20题进行多维交叉计分，识别你反复出现的动机、能力组合、理想工作结构和内在冲突。结果是“方向适配分析”，用于帮助你筛选机会，不替代重大职业和人生决策。</div><div class="startbox"><button class="startbtn" id="startBtn">开始测试</button></div></section>
+<section class="quiz" id="quizArea"><div class="qcard" id="questionCard"></div></section>
+<section class="loading" id="loading"><div class="spinner"></div><b>正在交叉分析20组选择</b><p>识别主驱动力、能力飞轮、行业与职能适配……</p></section>
+<section class="result" id="resultArea">
+<div class="result-hero"><small>YOUR PURPOSE ARCHETYPE</small><h2 id="resultTitle"></h2><div class="result-sub" id="resultSubtitle"></div><div class="purpose" id="purposeText"></div><div class="confidence"><span>结果一致性</span><div class="dots" id="confidenceDots"></div><span id="confidenceText"></span></div></div>
+<div class="card"><h3>一、你真正被什么驱动</h3><div class="insight" id="deepInsight"></div><div class="tags" id="valueTags"></div><div id="dimensionMeters"></div></div>
+<div class="card"><h3>二、你的能力飞轮</h3><p id="flywheel"></p><div id="archetypeRanks"></div><div class="insight" id="hiddenPattern"></div></div>
+<div class="card"><h3>三、最适合你的行业</h3><p>以下是综合兴趣主题、影响对象、回报方式、能力结构和风险偏好后的相对适配结果。</p><div id="industryRanks"></div></div>
+<div class="card"><h3>四、最适合你的职能</h3><div id="functionRanks"></div></div>
+<div class="card"><h3>五、三组最佳“行业 × 职能”组合</h3><div id="combos"></div></div>
+<div class="card"><h3>六、适合你的工作结构</h3><div id="workModel"></div></div>
+<div class="card"><h3>七、你最容易踩的坑</h3><div class="insight warning" id="riskInsight"></div><ul class="list" id="riskList"></ul></div>
+<div class="card"><h3>八、相对不适合的岗位与环境</h3><ul class="list" id="antiFit"></ul></div>
+<div class="card"><h3>九、以后筛选机会，看这四条</h3><ol class="list" id="filters"></ol></div>
+<div class="report-actions"><button class="btn btn-primary" id="cardBtn">生成朋友圈结果图</button><button class="btn btn-primary" id="copyBtn">复制精简报告</button><button class="btn btn-secondary" id="shareBtn">分享测试链接</button><button class="btn btn-secondary" id="restartBtn">重新测试</button></div>
+<div class="source">方法框架受到八木仁平“喜欢的事 × 擅长的事 × 重要的事”自我理解方法，以及 John Strelecky《世界尽头咖啡馆》关于存在目的、充实感和人生关键体验的启发。题目、计分模型和报告文字均为原创重构，非作者或出版社官方产品。</div>
+</section>
+</main><footer>方向不是一个职位名称，而是你反复愿意投入、擅长创造价值并愿意承担代价的方式。</footer>
 </div>
-<div class="toast" id="toast"></div>
-
+<div class="modal" id="cardModal"><div class="modal-box"><img id="cardImage" alt="结果卡"><p>长按图片保存，再发朋友圈</p><button class="btn btn-secondary" style="width:100%" id="closeModal">关闭</button></div></div><div class="toast" id="toast"></div>
 <script>
-const DATA = {
-  values: ["自由", "成长", "创造", "真实", "连接", "爱与关怀", "成就", "影响力", "公平", "安全", "稳定", "探索", "美", "秩序", "信仰与超越", "财富", "独立", "贡献"],
-  strengths: ["分析复杂问题", "快速学习整合", "清晰表达", "倾听与共情", "组织规划", "推动执行", "创造与设计", "说服与谈判", "连接人与资源", "带领团队", "教别人学会", "发现机会", "照顾细节", "应对危机"],
-  interests: ["商业与创业", "投资与金融", "科技与 AI", "教育与成长", "健康与医学", "艺术与设计", "写作与传播", "公共事务", "环境与可持续", "制造与工程", "旅行与文化", "心理与关系", "体育与户外", "美食与生活方式", "信仰与生命意义", "社区与公益"],
-  audiences: ["儿童与青少年", "普通职场人", "创业者与管理者", "专业人士", "家庭与父母", "老年人", "处于困境的人", "创作者", "企业与组织", "本地社区", "跨文化人群", "更广泛的公众"],
-  changes: ["获得清晰与方向", "学会并成长", "提高效率", "得到安全与保障", "拥有更多自由", "建立真实连接", "改善健康", "创造美与体验", "获得经济机会", "被公平对待", "恢复希望", "实现可持续发展"],
-  modes: ["独立深度工作", "一对一交流", "小团队协作", "面向公众表达", "长期研究", "快速推进项目", "亲手创造产品", "谈判与资源整合", "旅行与现场工作", "稳定规律节奏", "高度自主灵活", "创业并承担风险"],
-  constraints: ["稳定收入不能中断", "可投入时间有限", "家庭责任较重", "健康与精力有限", "暂时缺少资金", "暂时缺少专业能力", "不愿频繁出差", "不愿承担大风险", "目前没有明显约束"]
+const K={A:'archetype',V:'value',M:'mode',I:'industry',F:'function',U:'audience'};
+const labels={
+A:{builder:'事业建构',strategist:'战略判断',creator:'创造创新',connector:'资源连接',operator:'运营落地',communicator:'表达影响',guide:'教育引导',caretaker:'关怀支持',investigator:'研究探索',steward:'秩序守护'},
+V:{autonomy:'自主',achievement:'成就',meaning:'意义',creativity:'创造',connection:'连接',impact:'影响',security:'稳定',growth:'成长',wealth:'财富',mastery:'精进'},
+M:{leadership:'主导',collaboration:'协作',independent:'独立',public:'公开表达',depth:'深度',speed:'速度',variety:'多项目',structure:'结构',stability:'稳定',entrepreneurship:'创业'},
+I:{investment:'产业投资与项目孵化',enterprise:'企业服务与战略咨询',tech:'科技、AI与数字产品',education:'教育、知识服务与人才发展',health:'医疗健康与心理福祉',content:'文化内容、出版与知识产权',consumer:'消费品牌与生活方式',public:'公共事务、社会创新与公益',sustainability:'能源环保与可持续基础设施',faith:'信仰、生命教育与价值共同体',finance:'金融服务与财富管理',manufacturing:'制造、工程与供应链'},
+F:{founder:'创始人／事业发起',strategy:'战略规划／公司发展',partnerships:'商务拓展／合作谈判',investment:'投资并购／项目孵化',product:'产品战略／创新设计',communication:'品牌内容／公共表达',research:'研究咨询／专业分析',operations:'运营管理／项目交付',sales:'大客户销售／客户成功',teaching:'教育培训／成长引导',public_affairs:'公共事务／政企合作',risk:'财务风控／合规治理'},
+U:{enterprise:'企业与组织',professionals:'专业人士',public:'公众',youth:'年轻人与学生',vulnerable:'困境人群',believers:'共同信仰者',creators:'创作者',families:'家庭与父母'}
 };
-
-const questions = [
-  { id:"fulfillment", stage:"第一杯：此刻", type:"range", q:"你此刻对生活的充实感，打几分？", hint:"0 分代表“只是应付”，10 分代表“正在过自己认可的人生”。", min:0, max:10, value:6 },
-  { id:"regret", stage:"第一杯：此刻", type:"text", q:"假如十年后回望今天，你最怕后悔没有做什么？", hint:"不要写“应该做什么”，写那个一想到没做就会遗憾的事。", placeholder:"例如：没有认真创作、没有陪伴家人、没有建立自己的事业……" },
-  { id:"success", stage:"第一杯：此刻", type:"single", q:"你目前追求的“成功”，主要是谁定义的？", hint:"诚实比体面更有用。", options:["大部分是我自己", "我与重要的人共同定义", "更多来自家庭期待", "更多来自社会与同辈比较", "我还没有认真定义过"] },
-  { id:"fear", stage:"第一杯：此刻", type:"single", q:"想到生命终点时，哪一种感受最接近你？", hint:"这里不是判断勇敢与否，而是辨认什么正在阻止你。", options:["遗憾多于恐惧", "害怕失去已有的一切", "害怕人生没有意义", "感觉平静，重要的是活得真实", "我很少思考这件事"] },
-  { id:"values", stage:"第二杯：重要", type:"multi", max:5, q:"选出你最不愿牺牲的 5 个价值。", hint:"价值不是“我想拥有的东西”，而是你希望每天如何行动、如何对待自己与他人。", options:DATA.values },
-  { id:"valueEvidence", stage:"第二杯：重要", type:"text", q:"回忆一次你觉得“这才是我”的时刻。那时发生了什么？", hint:"用真实事件验证价值观，不要只写抽象口号。", placeholder:"当时我在……我做了……最让我满足的是……" },
-  { id:"strengths", stage:"第三杯：擅长", type:"multi", max:5, q:"选出 5 件你往往做得比别人更自然的事。", hint:"不是证书或职位，而是你会不自觉反复使用的思考与行动方式。", options:DATA.strengths },
-  { id:"askedHelp", stage:"第三杯：擅长", type:"text", q:"别人通常因为什么事情来找你帮忙？", hint:"他人反复向你求助的事情，常常藏着你自己低估的优势。", placeholder:"例如：帮忙判断、介绍资源、安慰、规划、写作、解决突发问题……" },
-  { id:"interests", stage:"第四杯：喜欢", type:"multi", max:5, q:"哪些主题会让你不由自主地继续了解？", hint:"不要求现在专业，只看你的注意力会自然流向哪里。", options:DATA.interests },
-  { id:"flow", stage:"第四杯：喜欢", type:"text", q:"做什么事时，你最容易忘记时间？", hint:"描述具体活动，而不是职位名称。", placeholder:"例如：研究资料、和人深聊、设计方案、修理东西、带队完成目标……" },
-  { id:"audiences", stage:"第五杯：贡献", type:"multi", max:3, q:"你最愿意长期为哪些人投入？", hint:"目的感往往在“我愿意为谁解决什么问题”中出现。", options:DATA.audiences },
-  { id:"changes", stage:"第五杯：贡献", type:"multi", max:3, q:"你希望这些人因为你的存在，发生什么改变？", hint:"选择结果，而不是职业。", options:DATA.changes },
-  { id:"modes", stage:"第六杯：方式", type:"multi", max:4, q:"哪些工作方式更符合你的天性？", hint:"同一个目的，可以用完全不同的生活方式实现。", options:DATA.modes },
-  { id:"constraints", stage:"第六杯：现实", type:"multi", max:3, q:"未来一年，你需要尊重哪些现实约束？", hint:"方向不是逃离现实，而是找到能在现实中开始的版本。", options:DATA.constraints },
-  { id:"bigFive", stage:"最后一杯：人生", type:"five", q:"写下你这一生最想做、看见或体验的 5 件事。", hint:"不需要宏大，也不要替别人写。它们共同组成你的人生导航仪。" },
-  { id:"commitment", stage:"最后一杯：行动", type:"single", q:"未来 90 天，你愿意用什么强度验证一个方向？", hint:"目的不是马上押上全部人生，而是持续收集真实证据。", options:["每周 1 小时，小步试验", "每周 3 小时，认真推进", "每周 5–8 小时，做出作品或服务", "愿意启动一个真实小项目"] }
+const Q=[
+{id:1,stage:'现状',q:'你最近最接近哪种状态？',type:'one',o:[
+['很忙，但不知道为什么忙',{A:{strategist:1},V:{meaning:1}}],['生活稳定，但有点无聊',{V:{growth:1,creativity:1}}],['想法很多，不知道选哪个',{A:{creator:2,strategist:1},M:{variety:1}}],['知道想做什么，但迟迟没开始',{A:{builder:1,operator:-1},V:{achievement:1}}],['正在做喜欢的事，但还没形成规模',{A:{builder:2},V:{achievement:1},M:{entrepreneurship:1}}],['正在做喜欢且有成果的事',{A:{builder:2,operator:1},V:{meaning:1,achievement:1}}]]},
+{id:2,stage:'能量',q:'哪两类事情最容易让你进入状态？',type:'two',o:[
+['分析复杂问题',{A:{strategist:2,investigator:2},F:{strategy:1,research:2}}],['创造新东西',{A:{creator:3,builder:1},V:{creativity:2},F:{product:2}}],['与人深入交流',{A:{guide:2,caretaker:1},V:{connection:2},M:{collaboration:1}}],['推动事情落地',{A:{operator:3,builder:1},F:{operations:2}}],['表达观点或讲故事',{A:{communicator:3},M:{public:2},F:{communication:2}}],['连接资源和人脉',{A:{connector:3},F:{partnerships:2}}],['帮助别人解决困难',{A:{guide:2,caretaker:2},V:{impact:1}}],['探索未知领域',{A:{investigator:2,creator:2},V:{growth:2},M:{depth:1}}]]},
+{id:3,stage:'优势',q:'别人通常因为什么来找你？',type:'two',o:[
+['帮他做判断',{A:{strategist:3},F:{strategy:2,research:1}}],['听他倾诉',{A:{caretaker:3},V:{connection:1}}],['帮他找资源',{A:{connector:3},F:{partnerships:2}}],['帮他组织执行',{A:{operator:3},F:{operations:2}}],['提供创意',{A:{creator:3},F:{product:2,communication:1}}],['教他弄明白',{A:{guide:3,communicator:1},F:{teaching:2,research:1}}],['解决突发问题',{A:{operator:2,strategist:1},M:{speed:1}}],['带领大家完成目标',{A:{builder:2,operator:1},M:{leadership:2},F:{founder:1}}]]},
+{id:4,stage:'价值观',q:'哪两个价值最不能被牺牲？',type:'two',o:[
+['自由与自主',{V:{autonomy:3},M:{independent:1}}],['成就与赢',{V:{achievement:3}}],['爱与连接',{V:{connection:3}}],['稳定与安全',{V:{security:3},M:{stability:1}}],['成长与精进',{V:{growth:3,mastery:1}}],['影响力',{V:{impact:3},M:{public:1}}],['真实与一致',{V:{meaning:1,autonomy:1,mastery:1}}],['财富与选择权',{V:{wealth:3,autonomy:1}}],['创造与原创',{V:{creativity:3}}],['信仰与生命意义',{V:{meaning:3},I:{faith:2}}]]},
+{id:5,stage:'成就感',q:'哪两种成果最让你觉得“这件事值得”？',type:'two',o:[
+['创造别人没有的产品或模式',{A:{creator:2,builder:2},F:{product:2,founder:1},V:{creativity:1}}],['让复杂项目真正落地',{A:{operator:2,builder:2},F:{operations:2,founder:1}}],['建立能长期运转的组织',{A:{builder:3,steward:1},F:{founder:2,operations:1}}],['提出被广泛传播的思想',{A:{communicator:2,strategist:1},F:{communication:2},V:{impact:1}}],['帮助一个人的人生发生改变',{A:{guide:2,caretaker:2},F:{teaching:2},V:{impact:1}}],['完成一笔重要交易或投资',{A:{connector:2,strategist:1},F:{partnerships:2,investment:2},I:{investment:1,finance:1}}],['解决长期存在的社会问题',{A:{steward:1,builder:1},V:{impact:2,meaning:1},I:{public:2,sustainability:1}}],['留下一件具有历史意义的事业',{A:{builder:2,communicator:1},V:{achievement:2,impact:2,meaning:1}}]]},
+{id:6,stage:'问题偏好',q:'你最愿意长期面对哪两类问题？',type:'two',o:[
+['方向不清、判断困难',{A:{strategist:2,guide:1},F:{strategy:2,research:1}}],['系统低效、流程混乱',{A:{operator:2,strategist:1},F:{operations:2}}],['市场需求没有被满足',{A:{builder:2,creator:1},F:{product:2,founder:1},I:{enterprise:1,consumer:1}}],['好项目缺资金、资源或合作方',{A:{connector:2,builder:1},F:{partnerships:2,investment:1}}],['健康、情绪与关系困扰',{A:{caretaker:2,guide:1},I:{health:2},U:{families:1,vulnerable:1}}],['知识复杂、别人学不会',{A:{guide:2,communicator:1},I:{education:2},F:{teaching:2}}],['规则不公或公共治理问题',{A:{steward:2,strategist:1},I:{public:2},F:{public_affairs:2,risk:1}}],['人为什么活着、如何活得有意义',{A:{guide:1,investigator:1},V:{meaning:2},I:{faith:3,education:1}}]]},
+{id:7,stage:'影响方式',q:'你更希望自己的存在带来哪两种改变？',type:'two',o:[
+['让别人获得方向',{A:{guide:2,strategist:1},F:{teaching:1,strategy:1}}],['让复杂事情变简单',{A:{strategist:2,operator:1},F:{research:1,operations:1}}],['创造真正有用的产品',{A:{creator:2,builder:1},F:{product:2}}],['给人带来美好体验',{A:{creator:2,caretaker:1},I:{consumer:2,content:1}}],['帮助别人获得机会',{A:{connector:2},V:{impact:1},F:{partnerships:1}}],['推动一个组织或事业',{A:{builder:3},F:{founder:2}}],['让困境中的人恢复希望',{A:{caretaker:2,guide:1},I:{health:1,public:1},U:{vulnerable:2}}],['留下思想、作品或长期影响',{A:{communicator:2,builder:1},V:{impact:2,meaning:1},F:{communication:2}}]]},
+{id:8,stage:'自然角色',q:'面对一个新机会，你最自然会承担哪两个角色？',type:'two',o:[
+['判断方向，制定战略',{A:{strategist:3},F:{strategy:2}}],['发现需求，设计产品',{A:{creator:2,builder:1},F:{product:3}}],['整合资金、人脉与合作方',{A:{connector:3},F:{partnerships:2,investment:1}}],['组织团队，推动执行',{A:{operator:3},M:{leadership:1},F:{operations:2}}],['对外表达，建立影响力',{A:{communicator:3},M:{public:2},F:{communication:2}}],['谈判交易，促成合作',{A:{connector:2,strategist:1},F:{partnerships:3,sales:1}}],['深入研究，形成专业结论',{A:{investigator:3},F:{research:3}}],['建立规则，控制风险',{A:{steward:3},F:{risk:3}}]]},
+{id:9,stage:'决策',q:'面对重要选择，你更接近哪种决策方式？',type:'one',o:[
+['先收集数据，再形成判断',{A:{investigator:2,strategist:2},M:{depth:1},F:{research:1}}],['直觉先行，快速抓住机会',{A:{builder:2,creator:1},M:{speed:2,entrepreneurship:1}}],['先和关键的人谈，找出利益交集',{A:{connector:3},M:{collaboration:1},F:{partnerships:1}}],['先做一个小版本，用结果迭代',{A:{operator:2,creator:1},M:{speed:1},F:{product:1,operations:1}}],['先确认规则、成本和最坏结果',{A:{steward:2,strategist:1},M:{structure:1},F:{risk:2}}]]},
+{id:10,stage:'节奏',q:'哪两种工作节奏最适合你？',type:'two',o:[
+['几年做成一件大事',{M:{depth:2},A:{builder:1,investigator:1},V:{mastery:1}}],['高频推进，快速看到结果',{M:{speed:2},A:{operator:1,connector:1}}],['一边研究，一边迭代',{M:{depth:1,speed:1},A:{investigator:1,creator:1}}],['同时处理多个项目',{M:{variety:2},A:{connector:1,builder:1}}],['长期深耕一个专业',{M:{depth:3},V:{mastery:2},A:{investigator:1}}],['高频社交和谈判',{M:{public:1,variety:1},A:{connector:2},F:{partnerships:1,sales:1}}],['独立思考，少被打扰',{M:{independent:2,depth:1},A:{investigator:1,creator:1}}],['稳定重复，按流程执行',{M:{stability:2,structure:2},A:{operator:1,steward:1}}]]},
+{id:11,stage:'组织阶段',q:'你在哪种组织阶段最容易发挥价值？',type:'one',o:[
+['从0到1，把概念变成第一版',{A:{builder:3,creator:1},M:{entrepreneurship:2},F:{founder:2,product:1}}],['从1到10，扩大业务和团队',{A:{builder:2,operator:1,connector:1},M:{leadership:1},F:{founder:1,operations:1}}],['成熟组织，优化体系与效率',{A:{operator:2,steward:1},M:{structure:2},F:{operations:2,risk:1}}],['危机重组，重新找方向和资源',{A:{strategist:2,connector:1,operator:1},F:{strategy:2,investment:1}}],['个人工作室或小型合伙制',{A:{creator:1,guide:1},M:{independent:2,collaboration:1},F:{research:1,communication:1}}]]},
+{id:12,stage:'自主权',q:'哪种权责结构最适合你？',type:'one',o:[
+['方向和结果都由我负责',{M:{leadership:2,entrepreneurship:2,independent:1},A:{builder:2},F:{founder:2}}],['目标明确，但过程由我决定',{M:{independent:2,structure:1},V:{autonomy:2}}],['与少数强搭档共同决策',{M:{collaboration:2,leadership:1},A:{connector:1}}],['在清晰框架下发挥专业能力',{M:{structure:2,depth:1},V:{mastery:1}}],['流程越明确越安心',{M:{structure:3,stability:2},A:{steward:1}}]]},
+{id:13,stage:'互动方式',q:'哪种人与人互动最舒服？',type:'one',o:[
+['面向公众演讲或传播',{A:{communicator:3},M:{public:3},F:{communication:2}}],['高频商务谈判与合作',{A:{connector:3},M:{public:1,variety:1},F:{partnerships:2,sales:1}}],['与少数高手深度协作',{M:{collaboration:2,depth:1},A:{strategist:1,creator:1}}],['大部分时间独立工作',{M:{independent:3,depth:1},A:{investigator:1,creator:1}}],['持续服务用户或陪伴成长',{A:{guide:2,caretaker:2},M:{collaboration:1},F:{teaching:1,sales:1}}]]},
+{id:14,stage:'风险偏好',q:'你能接受怎样的风险与回报？',type:'one',o:[
+['高风险高回报，愿意押注',{M:{entrepreneurship:3,speed:1},V:{achievement:2,wealth:1},A:{builder:1}}],['保留安全垫，再逐步加码',{M:{entrepreneurship:1,stability:1},V:{security:2,achievement:1},A:{strategist:1}}],['更看重稳定，不愿大幅波动',{M:{stability:3,structure:1},V:{security:3}}],['可以承担项目风险，但要控制个人下行',{M:{entrepreneurship:1,structure:1},V:{security:1,wealth:1},A:{strategist:1,steward:1}}]]},
+{id:15,stage:'回报机制',q:'你最希望通过哪两种方式创造价值并获得回报？',type:'two',o:[
+['创办或持有企业，分享长期增长',{F:{founder:3,investment:1},I:{investment:1,enterprise:1},M:{entrepreneurship:2},V:{wealth:1,achievement:1}}],['推动项目与交易，按成果获益',{F:{partnerships:3,investment:1},A:{connector:1},V:{achievement:1,wealth:1}}],['投资优质项目，通过资本判断获益',{F:{investment:3,strategy:1},I:{investment:2,finance:1},A:{strategist:1}}],['打造产品或品牌，通过规模销售获益',{F:{product:2,communication:1,sales:1},I:{consumer:2,tech:1},A:{creator:1}}],['提供咨询、专业服务或解决方案',{F:{research:2,strategy:1,sales:1},I:{enterprise:2,education:1}}],['输出内容、思想或知识产权',{F:{communication:3,teaching:1},I:{content:3,education:1}}],['管理组织，带领团队取得成果',{F:{operations:2,founder:1},M:{leadership:2},A:{operator:1}}],['建立公益、信仰或社会影响平台',{F:{founder:1,public_affairs:1,communication:1},I:{public:2,faith:2},V:{meaning:2,impact:1}}]]},
+{id:16,stage:'服务对象',q:'你最愿意长期服务哪两类对象？',type:'two',o:[
+['企业与创业者',{U:{enterprise:3},I:{enterprise:2},F:{strategy:1,partnerships:1}}],['政府与公共机构',{U:{enterprise:1,public:1},I:{public:2},F:{public_affairs:2}}],['投资人和高净值人群',{U:{professionals:2},I:{investment:2,finance:2},F:{investment:1}}],['普通消费者',{U:{public:2},I:{consumer:2},F:{product:1,communication:1}}],['年轻人与学生',{U:{youth:3},I:{education:2},F:{teaching:2}}],['困境中的个人或家庭',{U:{vulnerable:2,families:2},I:{health:1,public:1},A:{caretaker:1}}],['专业人士与行业从业者',{U:{professionals:3},I:{enterprise:1,education:1},F:{research:1,partnerships:1}}],['有共同信仰或价值观的人群',{U:{believers:3},I:{faith:3},V:{meaning:1}}]]},
+{id:17,stage:'主题兴趣',q:'你会主动关注哪两个主题，即使没人要求？',type:'two',o:[
+['商业、创业与产业机会',{I:{enterprise:3,investment:1},F:{founder:1,strategy:1}}],['投资、金融与资本市场',{I:{investment:3,finance:3},F:{investment:2}}],['科技、AI与新产品',{I:{tech:4},F:{product:2,research:1}}],['教育、学习与人成长',{I:{education:4},F:{teaching:2}}],['医疗、健康与心理',{I:{health:4},F:{research:1,teaching:1}}],['文化、写作、内容与审美',{I:{content:4,consumer:1},F:{communication:2}}],['公共政策、社会与国际事务',{I:{public:4},F:{public_affairs:2,strategy:1}}],['能源、环保与可持续发展',{I:{sustainability:4,manufacturing:1},F:{public_affairs:1,investment:1}}],['制造、工程与供应链',{I:{manufacturing:4},F:{operations:2,product:1}}],['信仰、哲学与生命意义',{I:{faith:4,education:1,content:1},V:{meaning:1}}]]},
+{id:18,stage:'反向验证',q:'哪两种工作状态最消耗你？',type:'two',o:[
+['没有决策权，只能服从',{M:{leadership:1,independent:1},V:{autonomy:2},F:{operations:-1}}],['收入长期不稳定',{V:{security:2},M:{stability:2,entrepreneurship:-1}}],['工作重复，缺少变化',{M:{variety:2,stability:-1},A:{creator:1}}],['人际内耗和办公室政治',{M:{collaboration:-1},V:{meaning:1},A:{steward:-1}}],['做的事没有社会或生命意义',{V:{meaning:2,impact:1}}],['很难看到明确成果',{V:{achievement:2},A:{operator:1}}],['长期独自工作，缺少合作',{M:{collaboration:2,independent:-1},V:{connection:1}}],['持续处理大量细节',{A:{operator:-1,steward:-1},M:{variety:1}}]]},
+{id:19,stage:'长期图景',q:'你最希望最终留下哪两种东西？',type:'two',o:[
+['一家长期经营的企业',{A:{builder:3},F:{founder:2},V:{achievement:1}}],['一套改变行业的产品或模式',{A:{creator:2,builder:1},F:{product:2},V:{creativity:1,impact:1}}],['一批被我帮助成长的人',{A:{guide:2,caretaker:1},F:{teaching:2},V:{connection:1,impact:1}}],['一套思想、作品或知识体系',{A:{communicator:2,investigator:1},F:{communication:2,research:1},I:{content:1}}],['一个有共同价值观的组织',{A:{builder:2,steward:1},I:{faith:1,public:1},V:{meaning:1,connection:1}}],['一批重要交易或投资成果',{A:{connector:1,strategist:1},F:{investment:2,partnerships:1},I:{investment:2}}],['一个改善社会或环境的项目',{A:{builder:1,steward:1},I:{public:2,sustainability:2},V:{impact:2}}],['一种被后人记住的影响',{A:{communicator:1,builder:1},V:{achievement:2,impact:2,meaning:1}}]]},
+{id:20,stage:'最终取舍',q:'当现实迫使你取舍，你最可能保留哪一项？',type:'one',o:[
+['自由，即使收入少一点',{V:{autonomy:3},M:{independent:2}}],['影响力，即使更辛苦',{V:{impact:3,achievement:1},M:{leadership:1}}],['专业精进，即使不被看见',{V:{mastery:3,growth:1},M:{depth:2},A:{investigator:1}}],['重要关系，即使成就慢一点',{V:{connection:3},A:{caretaker:1}}],['稳定，即使错过更大上行',{V:{security:3},M:{stability:2}}],['创造，即使结果不确定',{V:{creativity:3,autonomy:1},M:{entrepreneurship:1},A:{creator:1}}],['意义与信仰，即使不够世俗成功',{V:{meaning:4},I:{faith:1}}]]}
 ];
-
-let state = { index: 0, answers: {}, selected: [] };
-const el = id => document.getElementById(id);
-const chat = el("chat");
-const panel = el("questionPanel");
-
-function save(){ localStorage.setItem("purposeCafeState", JSON.stringify(state)); }
-function load(){
-  try {
-    const s = JSON.parse(localStorage.getItem("purposeCafeState"));
-    if(s && typeof s.index === "number" && s.index < questions.length){ state = s; }
-  } catch(e){}
-}
-function esc(s){ return String(s ?? "").replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#039;','"':'&quot;'}[c])); }
-function toast(msg){ const t=el("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),1800); }
-function addBubble(text, who="bot"){
-  const b=document.createElement("div"); b.className=`bubble ${who}`; b.innerHTML=esc(text).replace(/\n/g,"<br>"); chat.appendChild(b); setTimeout(()=>b.scrollIntoView({behavior:"smooth", block:"nearest"}),50);
-}
-function summarizeAnswer(q, a){
-  if(q.type === "range") return `${a} / 10`;
-  if(q.type === "multi") return a.join("、");
-  if(q.type === "five") return a.filter(Boolean).join("；");
-  return a;
-}
-function updateProgress(){
-  const pct=Math.round((state.index/questions.length)*100);
-  el("progressBar").style.width=pct+"%";
-  el("progressText").textContent=pct+"%";
-  el("stageLabel").textContent=state.index < questions.length ? questions[state.index].stage : "报告已生成";
-}
-
-function renderQuestion(){
-  updateProgress();
-  if(state.index >= questions.length){ generateResult(); return; }
-  const q=questions[state.index]; state.selected = Array.isArray(state.answers[q.id]) ? [...state.answers[q.id]] : [];
-  let body=`<div class="qtag">${esc(q.stage)} · ${state.index+1}/${questions.length}</div><div class="question">${esc(q.q)}</div><p class="hint">${esc(q.hint||"")}</p>`;
-  if(q.type === "text"){
-    body += `<textarea id="answerInput" maxlength="500" placeholder="${esc(q.placeholder||"写下你的真实答案……")}">${esc(state.answers[q.id]||"")}</textarea><div class="counter"><span id="charCount">${(state.answers[q.id]||"").length}</span>/500</div>`;
-  } else if(q.type === "range"){
-    const v=state.answers[q.id] ?? q.value;
-    body += `<div class="score" id="scoreValue">${v}</div><div class="slider-box"><input id="rangeInput" type="range" min="${q.min}" max="${q.max}" value="${v}"><div class="scale"><span>只是应付</span><span>非常充实</span></div></div>`;
-  } else if(q.type === "single" || q.type === "multi"){
-    body += `<div class="chips">${q.options.map(o=>`<button type="button" class="chip ${state.selected.includes(o)||state.answers[q.id]===o?'selected':''}" data-value="${esc(o)}">${esc(o)}</button>`).join("")}</div>`;
-    if(q.type === "multi") body += `<div class="counter">已选 <span id="selCount">${state.selected.length}</span> / ${q.max}</div>`;
-  } else if(q.type === "five"){
-    const vals=state.answers[q.id] || ["","","","",""];
-    body += `<div class="five-list">${[0,1,2,3,4].map(i=>`<input class="fiveInput" maxlength="90" value="${esc(vals[i]||"")}" placeholder="${i+1}. 我想……">`).join("")}</div>`;
-  }
-  body += `<div class="actions">${state.index>0?'<button class="btn btn-secondary" id="backBtn">上一步</button>':''}<button class="btn btn-primary" id="nextBtn">${state.index===questions.length-1?'生成我的方向报告':'继续'}</button></div>`;
-  panel.innerHTML=body;
-  bindQuestion(q);
-  panel.scrollIntoView({behavior:"smooth", block:"nearest"});
-}
-
-function bindQuestion(q){
-  if(q.type === "text"){
-    const a=el("answerInput"); a.addEventListener("input",()=>{ el("charCount").textContent=a.value.length; state.answers[q.id]=a.value; save(); });
-  }
-  if(q.type === "range"){
-    const r=el("rangeInput"); r.addEventListener("input",()=>{ el("scoreValue").textContent=r.value; state.answers[q.id]=Number(r.value); save(); });
-  }
-  if(q.type === "single" || q.type === "multi"){
-    panel.querySelectorAll(".chip").forEach(btn=>btn.addEventListener("click",()=>{
-      const v=btn.dataset.value;
-      if(q.type === "single"){
-        state.answers[q.id]=v; panel.querySelectorAll(".chip").forEach(x=>x.classList.remove("selected")); btn.classList.add("selected");
-      } else {
-        const idx=state.selected.indexOf(v);
-        if(idx>=0){ state.selected.splice(idx,1); btn.classList.remove("selected"); }
-        else if(state.selected.length<q.max){ state.selected.push(v); btn.classList.add("selected"); }
-        else toast(`最多选择 ${q.max} 项`);
-        state.answers[q.id]=[...state.selected]; el("selCount").textContent=state.selected.length;
-      }
-      save();
-    }));
-  }
-  if(q.type === "five"){
-    panel.querySelectorAll(".fiveInput").forEach((inp,i)=>inp.addEventListener("input",()=>{
-      const arr=[...panel.querySelectorAll(".fiveInput")].map(x=>x.value.trim()); state.answers[q.id]=arr; save();
-    }));
-  }
-  el("nextBtn").addEventListener("click",()=>next(q));
-  if(el("backBtn")) el("backBtn").addEventListener("click",()=>{ state.index--; save(); rebuildChat(); renderQuestion(); });
-}
-
-function next(q){
-  let a=state.answers[q.id];
-  if(q.type === "range" && a===undefined){ a=q.value; state.answers[q.id]=a; }
-  const invalid = q.type === "text" ? !String(a||"").trim() : q.type === "multi" ? !a || a.length===0 : q.type === "five" ? !a || a.filter(Boolean).length<3 : !a && a!==0;
-  if(invalid){ toast(q.type==="five"?"至少写下 3 件事":"先留下一个答案再继续"); return; }
-  addBubble(q.q,"bot"); addBubble(summarizeAnswer(q,a),"user");
-  state.index++; save();
-  setTimeout(renderQuestion,220);
-}
-
-function rebuildChat(){
-  chat.innerHTML="";
-  addBubble("欢迎来到世界尽头的人生咖啡馆。\n我不会替你定义人生，只会帮你把答案从经历里找出来。","bot");
-  for(let i=0;i<state.index;i++){
-    const q=questions[i], a=state.answers[q.id];
-    if(a!==undefined){ addBubble(q.q,"bot"); addBubble(summarizeAnswer(q,a),"user"); }
-  }
-}
-
-function scoreClusters(a){
-  const scores={"洞察与战略":0,"表达与影响":0,"创造与建设":0,"连接与服务":0};
-  const map={
-    "分析复杂问题":["洞察与战略"],"快速学习整合":["洞察与战略"],"组织规划":["洞察与战略","创造与建设"],"发现机会":["洞察与战略","表达与影响"],
-    "清晰表达":["表达与影响"],"说服与谈判":["表达与影响"],"教别人学会":["表达与影响","连接与服务"],"带领团队":["表达与影响","创造与建设"],
-    "创造与设计":["创造与建设"],"推动执行":["创造与建设"],"照顾细节":["创造与建设"],"应对危机":["创造与建设","洞察与战略"],
-    "倾听与共情":["连接与服务"],"连接人与资源":["连接与服务","表达与影响"]
-  };
-  (a.strengths||[]).forEach(s=>(map[s]||[]).forEach(k=>scores[k]+=2));
-  (a.modes||[]).forEach(m=>{
-    if(["独立深度工作","长期研究"].includes(m)) scores["洞察与战略"]++;
-    if(["面向公众表达","谈判与资源整合"].includes(m)) scores["表达与影响"]++;
-    if(["快速推进项目","亲手创造产品","创业并承担风险"].includes(m)) scores["创造与建设"]++;
-    if(["一对一交流","小团队协作","旅行与现场工作"].includes(m)) scores["连接与服务"]++;
-  });
-  return scores;
-}
-function routeText(cluster, topic, audience, change){
-  const routes={
-    "洞察与战略":["研究 / 咨询 / 战略",`围绕“${topic}”梳理复杂问题，为${audience}提供判断、方法或决策支持。适合从研究简报、行业分析、独立顾问或内部战略项目开始。`],
-    "表达与影响":["内容 / 教育 / 传播",`把“${topic}”讲清楚、讲得有力量，帮助${audience}${change}。适合从文章、课程、演讲、社交媒体栏目或知识产品开始。`],
-    "创造与建设":["产品 / 创业 / 项目",`在“${topic}”领域做出真实产品、服务或项目，让${audience}${change}。适合从原型、试点项目、小型服务或创业验证开始。`],
-    "连接与服务":["顾问 / 社群 / 资源连接",`通过倾听、陪伴与连接资源，帮助${audience}${change}。适合从一对一服务、小组活动、社群或商务合作撮合开始。`]
-  };
-  return routes[cluster];
-}
-function generateResult(){
-  updateProgress();
-  el("quizArea").style.display="none";
-  const a=state.answers;
-  const strengths=(a.strengths||[]).slice(0,3), interests=(a.interests||[]).slice(0,2), values=(a.values||[]).slice(0,3), audiences=(a.audiences||[]).slice(0,2), changes=(a.changes||[]).slice(0,2);
-  const strengthPhrase=strengths.length?strengths.join("、"):"自己的自然优势";
-  const interestPhrase=interests.length?interests.join("与"):"持续好奇的领域";
-  const audiencePhrase=audiences.length?audiences.join("及"):"你真正在意的人";
-  const changePhrase=changes.length?changes.join("、"):"更清晰、更充实地生活";
-  const purpose=`我愿意运用“${strengthPhrase}”的优势，在“${interestPhrase}”中，为${audiencePhrase}创造“${changePhrase}”的改变；并以${values.join("、")||"真实与贡献"}作为选择标准。`;
-  el("purposeText").textContent=purpose;
-
-  const scores=scoreClusters(a), max=Math.max(...Object.values(scores),1), sorted=Object.entries(scores).sort((x,y)=>y[1]-x[1]);
-  el("profileMeters").innerHTML=sorted.map(([k,v])=>`<div class="meter"><div><b>${k}</b><div class="meter-bar"><i style="width:${Math.round(v/max*100)}%"></i></div></div><span>${v}</span></div>`).join("");
-  el("profileSummary").textContent=`你目前最强的方向倾向是“${sorted[0][0]}”，其次是“${sorted[1][0]}”。这不是人格标签，而是提醒你：选择事情时，应尽量让自己高频使用这些模式。`;
-
-  const topic=interests[0]||"你最感兴趣的主题", audience=audiences[0]||"你在意的人", change=changes[0]||"获得积极改变";
-  el("routes").innerHTML=sorted.slice(0,3).map(([k])=>{const [t,d]=routeText(k,topic,audience,change); return `<div class="route"><b>${t}</b><span>${d}</span></div>`}).join("");
-
-  const big=(a.bigFive||[]).filter(Boolean);
-  el("bigFiveResult").innerHTML=big.map(x=>`<li>${esc(x)}</li>`).join("");
-
-  const hours=(a.commitment||"").includes("1 小时")?"每周固定 1 小时":(a.commitment||"").includes("3 小时")?"每周固定 3 小时":(a.commitment||"").includes("5–8")?"每周固定 5–8 小时":"以一个真实小项目为单位";
-  const experiments=[
-    `证据访谈：在两周内访谈 5 位“${audience}”，只问他们当前最困扰的问题、已经尝试的方法和愿意付出的代价。不要先推销答案。`,
-    `公开产出：围绕“${topic}”连续完成 3 个小作品——可以是文章、方案、视频、原型或一次分享。记录自己做完后的能量，而不只记录点赞。`,
-    `真实服务：${hours}，用“${strengths[0]||"你的首要优势"}”帮助至少 1 个人实现“${change}”，并收集对方最具体的反馈。`,
-    `第 90 天复盘：分别给“投入时的专注、完成后的满足、对他人的真实价值、现实可持续性”打分。四项中至少三项达到 7 分，再考虑扩大投入。`
-  ];
-  el("experiments").innerHTML=experiments.map(x=>`<li>${esc(x)}</li>`).join("");
-
-  el("resultArea").classList.add("show");
-  el("resultArea").scrollIntoView({behavior:"smooth",block:"start"});
-  localStorage.setItem("purposeCafeReport", JSON.stringify({purpose,scores,big,experiments,answers:a}));
-}
-
-function reportText(){
-  const a=state.answers;
-  const routes=[...document.querySelectorAll("#routes .route")].map((x,i)=>`${i+1}. ${x.innerText}`).join("\n");
-  const big=(a.bigFive||[]).filter(Boolean).map((x,i)=>`${i+1}. ${x}`).join("\n");
-  const exp=[...document.querySelectorAll("#experiments li")].map((x,i)=>`${i+1}. ${x.innerText}`).join("\n");
-  return `【世界尽头的人生咖啡馆｜我的方向报告】\n\n存在目的假说：\n${el("purposeText").innerText}\n\n适合尝试的方向：\n${routes}\n\nBig Five for Life：\n${big}\n\n未来90天实验：\n${exp}\n\n提醒：这是等待行动验证的方向假说，不是命运判决。`;
-}
-
-el("copyBtn").addEventListener("click", async()=>{
-  try{ await navigator.clipboard.writeText(reportText()); toast("完整报告已复制"); }
-  catch(e){ const ta=document.createElement("textarea"); ta.value=reportText(); document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); toast("完整报告已复制"); }
-});
-el("shareBtn").addEventListener("click", async()=>{
-  const data={title:document.title,text:"我在世界尽头的人生咖啡馆做了一次生命方向探索。你也来试试：",url:location.href};
-  if(navigator.share){ try{await navigator.share(data);}catch(e){} }
-  else { try{await navigator.clipboard.writeText(location.href);toast("页面链接已复制");}catch(e){toast("请用浏览器分享菜单转发");} }
-});
-el("restartBtn").addEventListener("click",()=>{
-  if(confirm("确定清除本次答案并重新开始吗？")){ localStorage.removeItem("purposeCafeState"); localStorage.removeItem("purposeCafeReport"); location.reload(); }
-});
-
-load();
-rebuildChat();
-renderQuestion();
+const profiles={
+builder:{name:'事业建构者',short:'建构',desc:'你需要把一个构想变成可持续运行的事业、组织或平台。',gift:'定义方向、聚集资源、对结果负责',shadow:'目标过多或低估长期运营'},
+strategist:{name:'战略架构师',short:'战略',desc:'你擅长从复杂信息中识别关键变量，决定做什么以及不做什么。',gift:'判断、取舍、设计路径',shadow:'分析充分但启动偏慢'},
+creator:{name:'创新创造者',short:'创造',desc:'你需要从无到有地提出新产品、新表达或新模式。',gift:'原创、产品感、重新组合',shadow:'追新快，可能低估重复打磨'},
+connector:{name:'资源连接者',short:'连接',desc:'你通过识别人、资源与利益交集，让原本分散的力量形成合作。',gift:'谈判、联盟、机会撮合',shadow:'重开局，可能低估成交后的交付'},
+operator:{name:'结果运营者',short:'落地',desc:'你把目标拆成节奏、责任和动作，并持续把事情推到结果。',gift:'执行、组织、解决现场问题',shadow:'容易替别人背过多责任'},
+communicator:{name:'思想传播者',short:'传播',desc:'你通过观点、叙事、内容和公开表达改变他人的理解。',gift:'表达、影响、品牌塑造',shadow:'可能把反馈和真实价值混在一起'},
+guide:{name:'成长引导者',short:'引导',desc:'你擅长把复杂经验转化为别人能理解并能行动的方向。',gift:'教学、咨询、赋能',shadow:'容易过度承担他人的选择'},
+caretaker:{name:'关怀支持者',short:'关怀',desc:'你关注人的真实处境，希望提供安全、修复和支持。',gift:'共情、陪伴、信任建立',shadow:'边界不足会造成情绪透支'},
+investigator:{name:'研究探索者',short:'探索',desc:'你需要理解事物为什么如此，并建立可靠的知识与判断。',gift:'研究、验证、专业深度',shadow:'可能在确定性不足时迟迟不定'},
+steward:{name:'秩序守护者',short:'治理',desc:'你重视规则、责任、风险和长期可信度。',gift:'治理、风控、制度化',shadow:'可能对变化和模糊容忍度偏低'}
+};
+const pairTitles={
+'builder|strategist':'战略事业建构者','builder|connector':'联盟型事业发起人','builder|creator':'创新型事业建构者','builder|communicator':'使命型公共事业建构者','builder|operator':'增长型事业操盘者','builder|guide':'教育型事业发起人','builder|steward':'制度型组织建构者','strategist|connector':'交易与资源架构师','strategist|investigator':'研究驱动的战略判断者','strategist|communicator':'思想型战略影响者','strategist|operator':'复杂项目操盘者','creator|communicator':'创意与叙事塑造者','creator|investigator':'探索型产品创新者','creator|connector':'跨界创新发起人','connector|communicator':'影响力联盟推动者','connector|operator':'商务落地推动者','guide|communicator':'知识影响者','guide|caretaker':'成长与修复引导者','guide|investigator':'研究型教育者','operator|steward':'系统治理者','communicator|caretaker':'共情型公共表达者','investigator|steward':'审慎型专业判断者'};
+const industryInfo={
+investment:'适合通过资本判断、交易结构和资源整合，把尚未成形的机会变成项目或企业。',enterprise:'适合处理非标准化商业问题，为企业提供战略、资源、增长或落地方案。',tech:'适合把新技术转化为产品、业务模式或产业应用，而不只是追逐概念。',education:'适合把知识、经验和方法转化为人的成长、组织能力或可规模化学习产品。',health:'适合围绕健康、心理、照护和生命质量建立专业服务或产品。',content:'适合通过内容、出版、品牌、纪录片、知识产权或思想产品形成长期影响。',consumer:'适合把洞察转化为产品、品牌与体验，直接面对市场反馈。',public:'适合跨越政府、企业与社会组织，解决规则、公共服务或社会问题。',sustainability:'适合能源、环保、基础设施等长周期项目，需要政策、资本、技术和执行协同。',faith:'适合围绕信仰、生命意义、价值观教育和共同体建立内容、服务或组织。',finance:'适合资本配置、财富管理、金融产品和风险收益判断。',manufacturing:'适合在产品、工程、供应链和大型项目中创造可验证的实体成果。'};
+const functionInfo={
+founder:'定义方向、承担最终结果并组织资本、人才和资源。',strategy:'识别关键变量、设计路径并帮助组织做取舍。',partnerships:'通过谈判、联盟和利益结构促成高价值合作。',investment:'发现机会、判断风险收益并推动项目或资本落地。',product:'从需求出发设计产品、模式和用户价值。',communication:'用观点、叙事、内容和品牌建立认知与影响。',research:'把复杂信息变成可靠判断、方法和专业结论。',operations:'把目标拆成流程、节奏和责任，持续交付结果。',sales:'理解客户关键诉求，建立信任并完成商业转化。',teaching:'把经验转化为他人能理解、能行动、能成长的路径。',public_affairs:'处理政策、政府、公共机构和多方利益相关者。',risk:'建立边界、制度和控制机制，让事业长期可信。'};
+let idx=0,answers={},scores={A:{},V:{},M:{},I:{},F:{},U:{}};
+const $=id=>document.getElementById(id);function addMap(bucket,map,m=1){if(!map)return;Object.entries(map).forEach(([k,v])=>bucket[k]=(bucket[k]||0)+v*m)}function applyOption(opt,m=1){const d=opt[1]||{};Object.entries(K).forEach(([key,name])=>addMap(scores[key],d[key],m))}
+function start(){ $('introArea').style.display='none';$('quizArea').classList.add('show');idx=0;renderQ() }
+function renderQ(){const q=Q[idx],chosen=answers[q.id]||[];$ ('stageLabel').textContent=q.stage;$('progressText').textContent=`${idx+1} / 20`;$('progressBar').style.width=`${idx/20*100}%`;const need=q.type==='two'?2:1;let html=`<div class="qnum">QUESTION ${String(idx+1).padStart(2,'0')} / 20</div><div class="question">${q.q}</div><p class="hint">${need===2?'请选择两项':'请选择一项，点击后自动进入下一题'}</p><div class="options">`;
+q.o.forEach((o,i)=>{const sel=chosen.includes(i)?' selected':'';html+=`<button class="option${sel}" data-i="${i}">${o[0]}<span class="mark">${sel?'✓':''}</span></button>`});html+=`</div><div class="qactions"><button class="btn btn-secondary" id="backBtn" ${idx===0?'disabled':''}>上一题</button>${q.type==='two'?`<button class="btn btn-primary" id="nextBtn" ${chosen.length===2?'':'disabled'}>下一题</button>`:''}</div>${q.type==='two'?`<div class="selection-note">已选 ${chosen.length} / 2</div>`:''}`;$('questionCard').innerHTML=html;
+$('questionCard').querySelectorAll('.option').forEach(b=>b.onclick=()=>selectOpt(Number(b.dataset.i)));$('backBtn').onclick=back;if(q.type==='two')$('nextBtn').onclick=next}
+function selectOpt(i){const q=Q[idx],arr=answers[q.id]||[];if(q.type==='one'){answers[q.id]=[i];setTimeout(next,150)}else{const p=arr.indexOf(i);if(p>=0)arr.splice(p,1);else if(arr.length<2)arr.push(i);else{arr.shift();arr.push(i)}answers[q.id]=arr;renderQ()}}
+function back(){if(idx>0){idx--;renderQ()}}function next(){const q=Q[idx],need=q.type==='two'?2:1;if((answers[q.id]||[]).length!==need)return;if(idx<Q.length-1){idx++;renderQ();window.scrollTo({top:260,behavior:'smooth'})}else finish()}
+function finish(){scores={A:{},V:{},M:{},I:{},F:{},U:{}};Q.forEach(q=>(answers[q.id]||[]).forEach(i=>applyOption(q.o[i])));$('quizArea').classList.remove('show');$('loading').classList.add('show');$('stageLabel').textContent='生成报告';$('progressText').textContent='20 / 20';$('progressBar').style.width='100%';setTimeout(()=>{ $('loading').classList.remove('show');buildResult();$('resultArea').classList.add('show');window.scrollTo({top:220,behavior:'smooth'})},900)}
+function sorted(bucket){return Object.entries(bucket).sort((a,b)=>b[1]-a[1])}function top(bucket,n=3){return sorted(bucket).slice(0,n)}function val(bucket,k){return bucket[k]||0}function pctList(arr){const max=arr[0]?.[1]||1,min=arr[arr.length-1]?.[1]||0;return arr.map((x,i)=>[x[0],Math.round(68+27*((x[1]-min)/Math.max(1,max-min))-(i*1.2))])}
+function pairTitle(a,b){return pairTitles[`${a}|${b}`]||pairTitles[`${b}|${a}`]||`${profiles[a].name} × ${profiles[b].short}`}
+function archetypeNarrative(a,b){const p=profiles[a],s=profiles[b];return `你的主轴不是单一技能，而是“${p.gift}”与“${s.gift}”的组合。${p.desc}${s.desc} 这意味着你最容易在需要同时运用两种能力的复杂情境中产生不可替代性，而不是在高度标准化、只要求单点执行的岗位里。`}
+function detectInsights(A,V,M){const out=[];if(val(V,'achievement')+val(V,'impact')>=8&&val(V,'security')>=5)out.push('你属于“高雄心、强安全边界”型：既想做成大事，又不愿让个人生活承受无限下行。适合用股权、项目制或双引擎结构逐步加码，而不是一次性孤注一掷。');if(val(M,'leadership')>=4&&val(M,'collaboration')>=3)out.push('你不是典型独行侠，而是“主导型协作”：需要掌握方向，但最好与少数能力强、价值观一致的搭档共同完成。');if(val(A,'creator')>=7&&val(A,'operator')<=3)out.push('你的创意与发起能力高于持续运营耐心。真正拉开差距的关键，不是再想一个新项目，而是配置强运营搭档并把一个方向连续做深。');if(val(A,'connector')>=7&&val(A,'operator')<=4)out.push('你很可能擅长把局组起来、让关键人坐到一张桌上；风险是成交之后的治理和交付。项目越大，越需要把责任、里程碑和退出机制写进结构。');if(val(V,'meaning')>=6&&(val(V,'wealth')+val(V,'achievement')>=5))out.push('你并不排斥商业回报，但商业更像承载意义的工具。只有赚钱而缺少价值认同的项目，短期能做，长期很难让你持续投入。');if(val(M,'variety')>=4&&val(M,'depth')<=3)out.push('你对多项目和变化的耐受力高，但容易把“机会很多”误认为“主线清晰”。你需要一个长期主题，把多个项目变成同一能力和资源的复利。');if(val(M,'public')>=4&&val(A,'communicator')>=6)out.push('你不仅想把事情做成，也希望被理解和被传播。内容、品牌或公开表达应当成为事业的放大器，而不是独立于主业的流量活动。');return out}
+function industryBonus(){const A=scores.A,F=scores.F,I=scores.I;const add=(k,n)=>I[k]=(I[k]||0)+n;if(val(A,'builder')>7){add('enterprise',2);add('investment',2);add('sustainability',1);add('faith',1)}if(val(A,'connector')>7){add('investment',2);add('enterprise',2);add('finance',1);add('public',1)}if(val(A,'creator')>7){add('tech',2);add('content',2);add('consumer',2)}if(val(A,'guide')>7){add('education',3);add('faith',1);add('health',1)}if(val(A,'caretaker')>7){add('health',3);add('public',1)}if(val(A,'steward')>7){add('public',2);add('finance',1);add('sustainability',1)}if(val(F,'investment')>6)add('investment',2);if(val(F,'public_affairs')>5){add('public',2);add('sustainability',1)} }
+function functionBonus(){const A=scores.A,F=scores.F,M=scores.M;const add=(k,n)=>F[k]=(F[k]||0)+n;if(val(A,'builder')>7)add('founder',3);if(val(A,'strategist')>7)add('strategy',3);if(val(A,'connector')>7)add('partnerships',3);if(val(A,'creator')>7)add('product',3);if(val(A,'operator')>7)add('operations',3);if(val(A,'communicator')>7)add('communication',3);if(val(A,'guide')>7)add('teaching',3);if(val(A,'investigator')>7)add('research',3);if(val(A,'steward')>7)add('risk',2);if(val(M,'leadership')>5)add('founder',1);if(val(M,'public')>5)add('communication',1);if(val(M,'depth')>5)add('research',1)}
+function buildResult(){industryBonus();functionBonus();const ar=top(scores.A,5),vr=top(scores.V,5),mr=top(scores.M,6),primary=ar[0][0],secondary=ar[1][0],title=pairTitle(primary,secondary);$('resultTitle').textContent=title;$('resultSubtitle').textContent=`主型：${profiles[primary].name}｜副型：${profiles[secondary].name}`;const inds=top(scores.I,5),funs=top(scores.F,5),aud=top(scores.U,2);const audText=aud.map(x=>labels.U[x[0]]).join('与');const purpose=`运用${profiles[primary].gift}，并结合${profiles[secondary].gift}，为${audText||'你真正重视的人群'}创造可持续的价值；你最适合留下的不是一串任务，而是一套能够长期运转、持续产生影响的成果。`;$('purposeText').textContent=purpose;
+const consistency=Math.min(5,Math.max(3,Math.round(3+(ar[0][1]-ar[2][1])/4)));$('confidenceDots').innerHTML=[1,2,3,4,5].map(i=>`<i class="${i<=consistency?'on':''}"></i>`).join('');$('confidenceText').textContent=consistency>=5?'很高':consistency===4?'较高':'中等偏高';
+const insights=detectInsights(scores.A,scores.V,scores.M);$('deepInsight').textContent=insights[0]||archetypeNarrative(primary,secondary);$('valueTags').innerHTML=vr.map(x=>`<span class="tag">${labels.V[x[0]]}</span>`).join('');const dims=[['自主性',val(scores.V,'autonomy')+val(scores.M,'independent')],['成就驱动',val(scores.V,'achievement')+val(scores.M,'leadership')],['意义驱动',val(scores.V,'meaning')+val(scores.V,'impact')],['创造需求',val(scores.V,'creativity')+val(scores.A,'creator')],['连接需求',val(scores.V,'connection')+val(scores.M,'collaboration')],['稳定需求',val(scores.V,'security')+val(scores.M,'stability')]];const dmMax=Math.max(...dims.map(x=>x[1]),1);$('dimensionMeters').innerHTML=dims.map(x=>`<div class="meter"><span>${x[0]}</span><div class="meterbar"><i style="width:${Math.round(25+70*x[1]/dmMax)}%"></i></div><b>${Math.round(55+40*x[1]/dmMax)}</b></div>`).join('');
+$('flywheel').textContent=archetypeNarrative(primary,secondary);$('archetypeRanks').innerHTML=ar.slice(0,4).map((x,i)=>`<div class="rank"><div class="rank-head"><b>${i+1}. ${profiles[x[0]].name}</b><span class="score">${profiles[x[0]].short}</span></div><p>${profiles[x[0]].desc}</p></div>`).join('');$('hiddenPattern').textContent=insights[1]||`你的优势并非平均分布。真正应当放大的，是“${profiles[primary].short}—${profiles[secondary].short}—${profiles[ar[2][0]].short}”这条能力链；把不在这条链上的长期工作交给合适的人，比强迫自己补齐所有短板更有效。`;
+const ip=pctList(inds);$('industryRanks').innerHTML=ip.map((x,i)=>`<div class="rank"><div class="rank-head"><b>${i+1}. ${labels.I[x[0]]}</b><span class="score">相对适配 ${x[1]}/100</span></div><p>${industryInfo[x[0]]}</p></div>`).join('');const fp=pctList(funs);$('functionRanks').innerHTML=fp.map((x,i)=>`<div class="rank"><div class="rank-head"><b>${i+1}. ${labels.F[x[0]]}</b><span class="score">相对适配 ${x[1]}/100</span></div><p>${functionInfo[x[0]]}</p></div>`).join('');
+const comboTexts=[`在“${labels.I[inds[0][0]]}”中承担“${labels.F[funs[0][0]]}”：这是你的主能力、兴趣主题与回报方式重叠最多的方向。`,`在“${labels.I[inds[1][0]]}”中承担“${labels.F[funs[1][0]]}”：更适合作为第二增长曲线，能补充主方向而不完全重复。`,`把“${labels.I[inds[2][0]]}”与“${labels.F[funs[2][0]]}”结合：适合做跨界项目、平台板块或长期影响力资产。`];$('combos').innerHTML=comboTexts.map((t,i)=>`<div class="combo"><b>组合 ${i+1}</b><span>${t}</span></div>`).join('');
+const org=answerText(11),authority=answerText(12),interaction=answerText(13),risk=answerText(14),reward=(answers[15]||[]).map(i=>Q[14].o[i][0]).join('；');$('workModel').innerHTML=`<p><b>最适组织阶段：</b>${org}</p><p><b>理想权责：</b>${authority}</p><p><b>互动方式：</b>${interaction}</p><p><b>风险结构：</b>${risk}</p><p><b>适合回报机制：</b>${reward}</p><div class="insight">${workModelInsight(primary,secondary)}</div>`;
+const riskItems=makeRisks(primary,secondary,insights);$('riskInsight').textContent=riskItems.shift();$('riskList').innerHTML=riskItems.map(x=>`<li>${x}</li>`).join('');const anti=makeAntiFit();$('antiFit').innerHTML=anti.map(x=>`<li>${x}</li>`).join('');$('filters').innerHTML=makeFilters(vr,primary,inds[0][0],funs[0][0]).map(x=>`<li>${x}</li>`).join('');window.RESULT={title,purpose,inds,ip,funs,fp,primary,secondary,vr,ar}}
+function answerText(id){const q=Q.find(x=>x.id===id),i=(answers[id]||[])[0];return q&&i!==undefined?q.o[i][0]:''}
+function workModelInsight(p,s){const A=scores.A,M=scores.M;if(val(M,'leadership')>=5&&val(A,'operator')<6)return`你适合掌握方向、关键关系与重大决策，但不宜长期亲自吞下全部运营细节。最佳配置是你负责战略、资源和关键节点，搭配强运营与财务治理伙伴。`;if(val(M,'independent')>=5&&val(M,'collaboration')>=3)return`你需要较高自主权，但并不等于独自工作。更合适的是小型合伙制、项目制或专家平台：边界清晰、伙伴精干、决策链短。`;if(val(M,'structure')>=6)return`你在清晰目标、规则和责任边界下发挥最好。成熟组织、专业机构或制度化团队，比高度混乱的早期创业环境更匹配。`;return`你的最佳工作结构应让“${profiles[p].gift}”成为主责，同时让“${profiles[s].gift}”成为放大器；职位名称不重要，关键是权责和回报必须与这两项能力绑定。`}
+function makeRisks(p,s,ins){const r=[];if(ins.length>1)r.push(ins[ins.length-1]);else r.push(`你的优势越突出，越容易把它用过头。${profiles[p].shadow}，同时也要留意${profiles[s].shadow}。`);if(val(scores.M,'variety')>=4)r.push('同时推进的项目过多，会稀释真正能形成复利的主线。');if(val(scores.A,'connector')>=7)r.push('合作意向不等于可交付成果，必须把责任、节点、资金和退出安排制度化。');if(val(scores.A,'builder')>=7&&val(scores.A,'operator')<6)r.push('不要把“发起成功”误认为“事业成功”，运营能力必须由团队补齐。');if(val(scores.V,'achievement')>=6)r.push('成就感可能让你高估宏大项目、低估长期而枯燥的积累。');if(val(scores.V,'security')>=5)r.push('过度等待绝对安全会错过窗口，适合设定可承受损失后分阶段下注。');while(r.length<4)r.push('在选择机会时，优先看长期能力和资源是否复利，而不只看眼前热度。');return r.slice(0,4)}
+function makeAntiFit(){const f=sorted(scores.F).slice(-4).reverse(),arr=f.map(x=>`${labels.F[x[0]]}：它要求的核心行为与你的高分能力重叠较少，不宜作为长期主责。`);if(val(scores.V,'autonomy')>=5)arr.push('层级严格、只有执行权而无法参与判断的环境。');if(val(scores.M,'variety')>=4)arr.push('长期高度重复、变化和反馈很少的工作。');if(val(scores.V,'meaning')>=5)arr.push('只有收入目标、与你价值观长期冲突的业务。');return [...new Set(arr)].slice(0,5)}
+function makeFilters(vr,p,ind,fun){return[`这件事是否让我持续使用“${profiles[p].gift}”，而不是长期扮演低分角色？`,`它是否同时满足“${labels.V[vr[0][0]]}”与“${labels.V[vr[1][0]]}”，还是必须长期牺牲其中之一？`,`它能否让我在“${labels.I[ind]}”中积累可复用的客户、知识、品牌或资本，而不只是一次性收入？`,`我的权责和回报是否与“${labels.F[fun]}”产生的价值相匹配？`]}
+function copyReport(){const R=window.RESULT;const text=`【人生方向20问】\n结果：${R.title}\n\n存在目的：${R.purpose}\n\n适合行业：\n${R.inds.map((x,i)=>`${i+1}. ${labels.I[x[0]]}`).join('\n')}\n\n适合职能：\n${R.funs.map((x,i)=>`${i+1}. ${labels.F[x[0]]}`).join('\n')}\n\n测试链接：${location.href}`;navigator.clipboard?.writeText(text).then(()=>toast('报告已复制')).catch(()=>toast('请长按复制'))}
+function shareLink(){if(navigator.share)navigator.share({title:'人生方向20问',text:'20道全选择题，生成存在目的、适合行业与职能的深度报告。',url:location.href}).catch(()=>{});else navigator.clipboard?.writeText(location.href).then(()=>toast('链接已复制'))}
+function makeCard(){const R=window.RESULT,c=document.createElement('canvas'),dpr=2;c.width=750*dpr;c.height=1100*dpr;const x=c.getContext('2d');x.scale(dpr,dpr);const g=x.createLinearGradient(0,0,750,1100);g.addColorStop(0,'#142019');g.addColorStop(1,'#345043');x.fillStyle=g;x.fillRect(0,0,750,1100);x.fillStyle='rgba(255,255,255,.05)';x.beginPath();x.arc(650,110,180,0,Math.PI*2);x.fill();x.fillStyle='#e2c38a';x.font='22px sans-serif';x.fillText('人生方向20问 · PURPOSE & FIT',50,65);x.fillStyle='#fff';x.font='bold 48px serif';wrap(x,R.title,50,150,650,62);x.fillStyle='rgba(255,255,255,.76)';x.font='25px sans-serif';wrap(x,R.purpose,50,290,650,42);x.strokeStyle='rgba(255,255,255,.2)';x.strokeRect(50,500,650,1);x.fillStyle='#e2c38a';x.font='bold 24px sans-serif';x.fillText('最适合的行业',50,555);x.fillStyle='#fff';x.font='25px sans-serif';R.inds.slice(0,3).forEach((a,i)=>x.fillText(`${i+1}. ${labels.I[a[0]]}`,65,610+i*48));x.fillStyle='#e2c38a';x.font='bold 24px sans-serif';x.fillText('最适合的职能',50,785);x.fillStyle='#fff';x.font='25px sans-serif';R.funs.slice(0,3).forEach((a,i)=>x.fillText(`${i+1}. ${labels.F[a[0]]}`,65,840+i*48));x.fillStyle='rgba(255,255,255,.55)';x.font='19px sans-serif';x.fillText('20道全选择题 · 约3分钟 · 扫码/点击链接测试',50,1040);const url=c.toDataURL('image/png');$('cardImage').src=url;$('cardModal').classList.add('show')}
+function wrap(ctx,text,x,y,max,line){let s='',yy=y;for(const ch of text){const t=s+ch;if(ctx.measureText(t).width>max){ctx.fillText(s,x,yy);s=ch;yy+=line}else s=t}if(s)ctx.fillText(s,x,yy)}function restart(){answers={};scores={A:{},V:{},M:{},I:{},F:{},U:{}};$('resultArea').classList.remove('show');$('introArea').style.display='block';$('stageLabel').textContent='准备开始';$('progressText').textContent='0 / 20';$('progressBar').style.width='0';window.scrollTo({top:0,behavior:'smooth'})}function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
+$('startBtn').onclick=start;$('copyBtn').onclick=copyReport;$('shareBtn').onclick=shareLink;$('cardBtn').onclick=makeCard;$('restartBtn').onclick=restart;$('closeModal').onclick=()=>$('cardModal').classList.remove('show');$('cardModal').onclick=e=>{if(e.target===$('cardModal'))$('cardModal').classList.remove('show')};
 </script>
-</body>
-</html>
+</body></html>
